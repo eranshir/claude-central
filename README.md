@@ -152,6 +152,28 @@ crontab -e
 
 Now your history updates itself while you're busy starting another project.
 
+### CLAUDE.md Suggestions
+
+The analyzer can generate personalized instructions for your `~/.claude/CLAUDE.md` file based on:
+- **Your coding patterns** — Common requests, repeated tasks, tools you use
+- **Best practices** — Tailored to the types of projects you're building (iOS, web, ML, etc.)
+
+```bash
+# Generate suggestions (requires API key)
+python3 claude_history_analyzer.py
+
+# Or regenerate suggestions from existing data
+python3 generate_suggestions.py
+
+# Start server to enable one-click saving
+python3 server.py
+```
+
+Then click the **Suggestions** tab in the UI to see your personalized recommendations. Each suggestion shows:
+- The instruction text (what gets added to CLAUDE.md)
+- A rationale explaining why it would help
+- An **"Add to CLAUDE.md"** button for instant saving
+
 ## How It Works
 
 ```
