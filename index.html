@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code History</title>
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --text-muted: #6e7681;
+            --border-color: #30363d;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-purple: #a371f7;
+            --accent-orange: #d29922;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            border-radius: 8px;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .search-input {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: var(--text-primary);
+            width: 300px;
+            font-size: 14px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.2);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .stats {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px 20px;
+            min-width: 150px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--accent-blue);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 20px;
+        }
+
+        .sidebar {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .sidebar h2 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .project-list {
+            list-style: none;
+        }
+
+        .project-item {
+            padding: 10px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+            transition: background-color 0.15s;
+        }
+
+        .project-item:hover {
+            background-color: var(--bg-tertiary);
+        }
+
+        .project-item.active {
+            background-color: var(--bg-tertiary);
+            border-left: 3px solid var(--accent-blue);
+            padding-left: 9px;
+        }
+
+        .project-name {
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .project-count {
+            font-size: 12px;
+            color: var(--text-muted);
+            background-color: var(--bg-tertiary);
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .content-area {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            min-height: 600px;
+        }
+
+        .content-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .content-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .github-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .github-link:hover {
+            color: var(--accent-blue);
+        }
+
+        .timeline {
+            padding: 20px;
+        }
+
+        .day-group {
+            margin-bottom: 30px;
+        }
+
+        .day-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .day-date {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .day-summary {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .session-card {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .session-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .session-time {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .session-meta {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background-color: var(--bg-secondary);
+            color: var(--text-secondary);
+        }
+
+        .badge.commit {
+            background-color: rgba(63, 185, 80, 0.15);
+            color: var(--accent-green);
+        }
+
+        .session-summary {
+            font-size: 14px;
+            color: var(--text-primary);
+            white-space: pre-wrap;
+        }
+
+        .session-summary ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+
+        .session-summary li {
+            margin-bottom: 4px;
+        }
+
+        .commits-list {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .commits-title {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .commit-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+        }
+
+        .commit-sha {
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", monospace;
+            font-size: 12px;
+            color: var(--accent-blue);
+            text-decoration: none;
+        }
+
+        .commit-sha:hover {
+            text-decoration: underline;
+        }
+
+        .commit-tag {
+            font-size: 12px;
+            color: var(--accent-green);
+            text-decoration: none;
+            background-color: rgba(63, 185, 80, 0.15);
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+
+        .commit-tag:hover {
+            background-color: rgba(63, 185, 80, 0.25);
+        }
+
+        .tag-icon {
+            font-size: 11px;
+        }
+
+        .commit-message {
+            font-size: 13px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .tools-list {
+            margin-top: 12px;
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .tool-badge {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background-color: rgba(163, 113, 247, 0.15);
+            color: var(--accent-purple);
+        }
+
+        .badge.clickable {
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .badge.clickable:hover {
+            background-color: var(--accent-blue);
+            color: var(--bg-primary);
+        }
+
+        .badge.clickable.expanded {
+            background-color: var(--accent-blue);
+            color: var(--bg-primary);
+        }
+
+        .messages-list {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+            display: none;
+        }
+
+        .messages-list.expanded {
+            display: block;
+        }
+
+        .messages-title {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .message-item {
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            background-color: var(--bg-secondary);
+            border-radius: 6px;
+            border-left: 3px solid var(--accent-blue);
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .message-content {
+            font-size: 13px;
+            color: var(--text-primary);
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 400px;
+            color: var(--text-muted);
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 400px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .date-filter {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .date-input {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 6px 10px;
+            color: var(--text-primary);
+            font-size: 13px;
+        }
+
+        .date-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        .filter-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .highlight {
+            background-color: rgba(210, 153, 34, 0.3);
+            border-radius: 2px;
+            padding: 0 2px;
+        }
+
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                position: static;
+            }
+            .search-input {
+                width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>
+                <div class="logo"></div>
+                Claude Code History
+            </h1>
+            <div class="search-container">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search activities...">
+                <div class="date-filter">
+                    <span class="filter-label">From:</span>
+                    <input type="date" class="date-input" id="dateFrom">
+                    <span class="filter-label">To:</span>
+                    <input type="date" class="date-input" id="dateTo">
+                </div>
+            </div>
+        </header>
+
+        <div class="stats" id="stats">
+            <!-- Stats will be populated by JS -->
+        </div>
+
+        <div class="main-content">
+            <aside class="sidebar">
+                <h2>Projects</h2>
+                <ul class="project-list" id="projectList">
+                    <!-- Projects will be populated by JS -->
+                </ul>
+            </aside>
+
+            <main class="content-area" id="contentArea">
+                <div class="loading">
+                    <div class="spinner"></div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let historyData = null;
+        let selectedProject = null;
+        let searchQuery = '';
+        let dateFrom = null;
+        let dateTo = null;
+
+        // Load data
+        async function loadData() {
+            try {
+                const response = await fetch('history_data.json');
+                if (!response.ok) throw new Error('Failed to load data');
+                historyData = await response.json();
+                initializeUI();
+            } catch (error) {
+                console.error('Error loading data:', error);
+                document.getElementById('contentArea').innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                        </svg>
+                        <p>Could not load history data.</p>
+                        <p style="font-size: 12px; margin-top: 8px;">Make sure history_data.json exists in the same directory.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function initializeUI() {
+            renderStats();
+            renderProjectList();
+
+            // Select first project by default
+            const projects = Object.keys(historyData.projects);
+            if (projects.length > 0) {
+                selectProject(projects[0]);
+            }
+
+            // Set up event listeners
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                searchQuery = e.target.value.toLowerCase();
+                if (selectedProject) renderProjectContent(selectedProject);
+            });
+
+            document.getElementById('dateFrom').addEventListener('change', (e) => {
+                dateFrom = e.target.value ? new Date(e.target.value) : null;
+                if (selectedProject) renderProjectContent(selectedProject);
+            });
+
+            document.getElementById('dateTo').addEventListener('change', (e) => {
+                dateTo = e.target.value ? new Date(e.target.value + 'T23:59:59') : null;
+                if (selectedProject) renderProjectContent(selectedProject);
+            });
+        }
+
+        function renderStats() {
+            const projects = Object.values(historyData.projects);
+            const totalProjects = projects.length;
+            let totalSessions = 0;
+            let totalCommits = 0;
+            let totalDays = new Set();
+
+            projects.forEach(project => {
+                Object.entries(project.days || {}).forEach(([date, day]) => {
+                    totalDays.add(date);
+                    totalSessions += (day.sessions || []).length;
+                    (day.sessions || []).forEach(session => {
+                        totalCommits += (session.commits || []).length;
+                    });
+                });
+            });
+
+            document.getElementById('stats').innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-value">${totalProjects}</div>
+                    <div class="stat-label">Projects</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${totalDays.size}</div>
+                    <div class="stat-label">Active Days</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${totalSessions}</div>
+                    <div class="stat-label">Sessions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${totalCommits}</div>
+                    <div class="stat-label">Commits</div>
+                </div>
+            `;
+        }
+
+        function renderProjectList() {
+            const projectList = document.getElementById('projectList');
+            const projects = Object.entries(historyData.projects)
+                .map(([path, data]) => ({
+                    path,
+                    name: data.name,
+                    sessionCount: Object.values(data.days || {})
+                        .reduce((sum, day) => sum + (day.sessions || []).length, 0)
+                }))
+                .sort((a, b) => b.sessionCount - a.sessionCount);
+
+            projectList.innerHTML = projects.map(project => `
+                <li class="project-item ${selectedProject === project.path ? 'active' : ''}"
+                    onclick="selectProject('${escapeHtml(project.path)}')">
+                    <span class="project-name" title="${escapeHtml(project.path)}">${escapeHtml(project.name)}</span>
+                    <span class="project-count">${project.sessionCount}</span>
+                </li>
+            `).join('');
+        }
+
+        function selectProject(projectPath) {
+            selectedProject = projectPath;
+            renderProjectList();
+            renderProjectContent(projectPath);
+        }
+
+        function renderProjectContent(projectPath) {
+            const project = historyData.projects[projectPath];
+            if (!project) return;
+
+            const contentArea = document.getElementById('contentArea');
+
+            // Sort days in reverse chronological order
+            const days = Object.entries(project.days || {})
+                .sort((a, b) => b[0].localeCompare(a[0]))
+                .filter(([date, day]) => {
+                    // Date filter
+                    const dayDate = new Date(date);
+                    if (dateFrom && dayDate < dateFrom) return false;
+                    if (dateTo && dayDate > dateTo) return false;
+                    return true;
+                });
+
+            // Filter by search query
+            const filteredDays = days.map(([date, day]) => {
+                if (!searchQuery) return [date, day];
+
+                const filteredSessions = (day.sessions || []).filter(session => {
+                    const summaryMatch = (session.summary || '').toLowerCase().includes(searchQuery);
+                    const commitMatch = (session.commits || []).some(c =>
+                        c.message.toLowerCase().includes(searchQuery)
+                    );
+                    return summaryMatch || commitMatch;
+                });
+
+                return [date, { ...day, sessions: filteredSessions }];
+            }).filter(([date, day]) => day.sessions.length > 0);
+
+            const githubLink = project.github_url
+                ? `<a href="${project.github_url}" target="_blank" class="github-link">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+                    </svg>
+                    View on GitHub
+                   </a>`
+                : '';
+
+            if (filteredDays.length === 0) {
+                contentArea.innerHTML = `
+                    <div class="content-header">
+                        <h2 class="content-title">${escapeHtml(project.name)}</h2>
+                        ${githubLink}
+                    </div>
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                        </svg>
+                        <p>No matching activities found.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            contentArea.innerHTML = `
+                <div class="content-header">
+                    <h2 class="content-title">${escapeHtml(project.name)}</h2>
+                    ${githubLink}
+                </div>
+                <div class="timeline">
+                    ${filteredDays.map(([date, day]) => renderDay(date, day)).join('')}
+                </div>
+            `;
+        }
+
+        function renderDay(date, day) {
+            const formattedDate = new Date(date).toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            return `
+                <div class="day-group">
+                    <div class="day-header">
+                        <span class="day-date">${formattedDate}</span>
+                        ${day.summary ? `<span class="day-summary">${highlightSearch(escapeHtml(day.summary.substring(0, 100)))}</span>` : ''}
+                    </div>
+                    ${(day.sessions || []).map(renderSession).join('')}
+                </div>
+            `;
+        }
+
+        function renderSession(session) {
+            const startTime = session.start_time
+                ? new Date(session.start_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+                : '';
+            const endTime = session.end_time
+                ? new Date(session.end_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+                : '';
+            const timeRange = startTime && endTime ? `${startTime} - ${endTime}` : startTime || '';
+
+            const commitCount = (session.commits || []).length;
+            const messageCount = session.message_count || 0;
+            const sessionId = session.session_id || Math.random().toString(36).substr(2, 9);
+
+            // Format summary - handle bullet points
+            let formattedSummary = session.summary || 'No summary available';
+            formattedSummary = formattedSummary.replace(/^- /gm, '• ');
+
+            return `
+                <div class="session-card" data-session-id="${sessionId}">
+                    <div class="session-header">
+                        <span class="session-time">${timeRange}</span>
+                        <div class="session-meta">
+                            <span class="badge clickable" onclick="toggleMessages('${sessionId}')" id="badge-${sessionId}">${messageCount} messages</span>
+                            ${commitCount > 0 ? `<span class="badge commit">${commitCount} commit${commitCount > 1 ? 's' : ''}</span>` : ''}
+                        </div>
+                    </div>
+                    <div class="session-summary">${highlightSearch(escapeHtml(formattedSummary))}</div>
+                    ${renderMessages(session.messages, sessionId)}
+                    ${renderCommits(session.commits)}
+                    ${renderTools(session.tools_used)}
+                </div>
+            `;
+        }
+
+        function toggleMessages(sessionId) {
+            const messagesList = document.getElementById(`messages-${sessionId}`);
+            const badge = document.getElementById(`badge-${sessionId}`);
+            if (messagesList) {
+                messagesList.classList.toggle('expanded');
+                badge.classList.toggle('expanded');
+            }
+        }
+
+        function renderMessages(messages, sessionId) {
+            if (!messages || messages.length === 0) return '';
+
+            return `
+                <div class="messages-list" id="messages-${sessionId}">
+                    <div class="messages-title">User Messages</div>
+                    ${messages.map(msg => {
+                        const time = msg.timestamp
+                            ? new Date(msg.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+                            : '';
+                        return `
+                            <div class="message-item">
+                                ${time ? `<div class="message-time">${time}</div>` : ''}
+                                <div class="message-content">${highlightSearch(escapeHtml(msg.content))}</div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        function renderCommits(commits) {
+            if (!commits || commits.length === 0) return '';
+
+            return `
+                <div class="commits-list">
+                    <div class="commits-title">Commits</div>
+                    ${commits.map(commit => {
+                        const label = commit.tag
+                            ? `<span class="tag-icon">🏷️</span> ${escapeHtml(commit.tag)}`
+                            : commit.sha.substring(0, 7);
+                        const className = commit.tag ? 'commit-tag' : 'commit-sha';
+                        return `
+                            <div class="commit-item">
+                                ${commit.url
+                                    ? `<a href="${commit.url}" target="_blank" class="${className}">${label}</a>`
+                                    : `<span class="${className}">${label}</span>`
+                                }
+                                <span class="commit-message">${highlightSearch(escapeHtml(commit.message))}</span>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        function renderTools(tools) {
+            if (!tools || tools.length === 0) return '';
+
+            return `
+                <div class="tools-list">
+                    ${tools.slice(0, 10).map(tool => `
+                        <span class="tool-badge">${escapeHtml(tool)}</span>
+                    `).join('')}
+                    ${tools.length > 10 ? `<span class="tool-badge">+${tools.length - 10} more</span>` : ''}
+                </div>
+            `;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function highlightSearch(text) {
+            if (!searchQuery) return text;
+            const regex = new RegExp(`(${escapeRegex(searchQuery)})`, 'gi');
+            return text.replace(regex, '<span class="highlight">$1</span>');
+        }
+
+        function escapeRegex(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        // Initialize
+        loadData();
+    </script>
+</body>
+</html>

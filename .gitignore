@@ -1,0 +1,22 @@
+# Environment files with secrets
+.env
+.env.local
+!.env.example
+
+# Generated data (contains personal info and potentially API keys from conversations)
+history_data.json
+
+# Claude Code local settings
+.claude/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Logs
+*.log
+analyzer.log
+
+# OS files
+.DS_Store
