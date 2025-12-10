@@ -30,7 +30,7 @@ You freeze. You have mass-produced more code than an LLM factory. But you couldn
 
 This tool digs through your Claude Code history across **ALL your projects** and reconstructs what you actually did. It's like having a second brain that actually remembers things — organized by project, by day, by session.
 
-Finally, you can answer: *"What was I working on in that foodis project last Thursday?"* without scrolling through 47 conversation threads.
+Finally, you can answer: *"What was I working on in that recipe app last Thursday?"* without scrolling through 47 conversation threads.
 
 ### Features
 
@@ -63,15 +63,15 @@ Your command center for multi-project chaos:
 │  📊 12 Projects  │  47 Active Days  │  156 Sessions  │  89 🏷️  │
 ├─────────────────────────────────────────────────────────────────┤
 │  ┌──────────────┐  ┌───────────────────────────────────────────┐│
-│  │ PROJECTS     │  │ foodis                          [GitHub] ││
+│  │ PROJECTS     │  │ pet-tracker                     [GitHub] ││
 │  │──────────────│  │───────────────────────────────────────────││
-│  │ foodis    47 │  │ December 10, 2025                        ││
-│  │ guitarHub 32 │  │ ┌───────────────────────────────────────┐ ││
-│  │ WorldInt  18 │  │ │ 09:13 - 15:35       [18 msgs] [🏷️ v2.1]│ ││
-│  │ bennet    12 │  │ │ Spun up 2 agents:                     │ ││
-│  │ btc        8 │  │ │ • Agent 1: Trip invite deep linking   │ ││
-│  │ scenic     5 │  │ │ • Agent 2: Booking feature design     │ ││
-│  │ game       3 │  │ │ Merged both, deployed to staging      │ ││
+│  │ pet-tracker47│  │ December 10, 2025                        ││
+│  │ budgetapp 32 │  │ ┌───────────────────────────────────────┐ ││
+│  │ ml-pipeline18│  │ │ 09:13 - 15:35       [18 msgs] [🏷️ v2.1]│ ││
+│  │ website   12 │  │ │ Spun up 2 agents:                     │ ││
+│  │ cli-tool   8 │  │ │ • Agent 1: Push notification system   │ ││
+│  │ api-proxy  5 │  │ │ • Agent 2: Pet activity dashboard     │ ││
+│  │ dotfiles   3 │  │ │ Merged both, deployed to staging      │ ││
 │  │ ...          │  │ └───────────────────────────────────────┘ ││
 │  └──────────────┘  │                                           ││
 │                    │ December 9, 2025                          ││
