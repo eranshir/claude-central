@@ -731,6 +731,455 @@
             display: block;
         }
 
+        /* Live Monitor Styles */
+        .live-panel {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 0 8px 8px 8px;
+            padding: 20px;
+            display: none;
+        }
+
+        .live-panel.active {
+            display: block;
+        }
+
+        .live-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .live-title {
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .live-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            animation: pulse 2s infinite;
+        }
+
+        .live-indicator.warning {
+            background: var(--accent-orange);
+        }
+
+        .live-indicator.alert {
+            background: #f85149;
+            animation: pulse-alert 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes pulse-alert {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.2); }
+        }
+
+        .live-settings-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 6px 12px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .live-settings-btn:hover {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .live-stats {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .live-stat {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 16px;
+            min-width: 120px;
+        }
+
+        .live-stat-value {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .live-stat-value.waiting {
+            color: var(--accent-orange);
+        }
+
+        .live-stat-value.processing {
+            color: var(--accent-blue);
+        }
+
+        .live-stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .live-alert-banner {
+            background: rgba(248, 81, 73, 0.1);
+            border: 1px solid #f85149;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .live-alert-banner.active {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .live-alert-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .live-alert-icon {
+            font-size: 20px;
+        }
+
+        .live-alert-text {
+            color: #f85149;
+            font-weight: 500;
+        }
+
+        .live-alert-dismiss {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 4px;
+            font-size: 18px;
+        }
+
+        .live-sessions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .live-session-card {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            transition: border-color 0.15s;
+        }
+
+        .live-session-card:hover {
+            border-color: var(--text-muted);
+        }
+
+        .live-session-card.waiting {
+            border-left: 3px solid var(--accent-orange);
+        }
+
+        .live-session-card.processing {
+            border-left: 3px solid var(--accent-blue);
+        }
+
+        .live-session-card.idle {
+            border-left: 3px solid var(--text-muted);
+            opacity: 0.7;
+        }
+
+        .live-session-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .live-session-project {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .live-session-state {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        .live-session-state.waiting {
+            background: rgba(210, 153, 34, 0.2);
+            color: var(--accent-orange);
+        }
+
+        .live-session-state.processing {
+            background: rgba(88, 166, 255, 0.2);
+            color: var(--accent-blue);
+        }
+
+        .live-session-state.idle {
+            background: var(--bg-secondary);
+            color: var(--text-muted);
+        }
+
+        .live-session-state.complete {
+            background: rgba(63, 185, 80, 0.2);
+            color: var(--accent-green);
+        }
+
+        .live-session-details {
+            font-size: 13px;
+            color: var(--text-secondary);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .live-session-detail {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .live-session-preview {
+            margin-top: 8px;
+            font-size: 13px;
+            color: var(--text-muted);
+            font-style: italic;
+            max-width: 600px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .live-session-approval {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(210, 153, 34, 0.1);
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .live-session-approval-label {
+            color: var(--accent-orange);
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .live-session-actions {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .live-jump-btn {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 6px 12px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s;
+        }
+
+        .live-jump-btn:hover {
+            background: var(--accent-purple);
+            border-color: var(--accent-purple);
+            color: white;
+        }
+
+        .live-jump-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .live-jump-btn.success {
+            background: var(--accent-green);
+            border-color: var(--accent-green);
+            color: white;
+        }
+
+        .live-jump-btn.error {
+            background: #f85149;
+            border-color: #f85149;
+            color: white;
+        }
+
+        .live-empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .live-empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        /* Notification Settings Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            width: 100%;
+            max-width: 480px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 24px;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .modal-section {
+            margin-bottom: 20px;
+        }
+
+        .modal-section-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+        }
+
+        .modal-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .modal-checkbox input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .modal-slider-group {
+            margin-top: 12px;
+            margin-left: 28px;
+        }
+
+        .modal-slider-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .modal-slider {
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            background: var(--bg-tertiary);
+            border-radius: 3px;
+            outline: none;
+        }
+
+        .modal-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--accent-purple);
+            cursor: pointer;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .modal-btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-btn-primary {
+            background: var(--accent-purple);
+            border-color: var(--accent-purple);
+            color: white;
+        }
+
+        .modal-btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .modal-btn-test {
+            background: var(--bg-tertiary);
+            color: var(--accent-blue);
+            margin-right: auto;
+        }
+
         .suggestions-header {
             margin-bottom: 20px;
         }
@@ -884,10 +1333,129 @@
         </div>
 
         <div class="tabs-container">
+            <button class="suggestions-tab" onclick="showTab('live')" id="liveTab">
+                <span class="live-indicator" id="liveTabIndicator"></span> Live <span id="liveCount"></span>
+            </button>
             <button class="suggestions-tab active" onclick="showTab('history')">History</button>
             <button class="suggestions-tab" onclick="showTab('suggestions')" id="suggestionsTab">
                 Suggestions <span id="suggestionsCount"></span>
             </button>
+        </div>
+
+        <div class="live-panel" id="livePanel">
+            <div class="live-header">
+                <div class="live-title">
+                    <span class="live-indicator" id="liveIndicator"></span>
+                    Live Monitor
+                </div>
+                <button class="live-settings-btn" onclick="openNotificationSettings()">
+                    Settings
+                </button>
+            </div>
+
+            <div class="live-alert-banner" id="liveAlertBanner">
+                <div class="live-alert-content">
+                    <span class="live-alert-icon">🔔</span>
+                    <span class="live-alert-text" id="liveAlertText">1 session waiting for input</span>
+                </div>
+                <button class="live-alert-dismiss" onclick="dismissAlert()">&times;</button>
+            </div>
+
+            <div class="live-stats">
+                <div class="live-stat">
+                    <div class="live-stat-value waiting" id="waitingCount">0</div>
+                    <div class="live-stat-label">Waiting</div>
+                </div>
+                <div class="live-stat">
+                    <div class="live-stat-value processing" id="processingCount">0</div>
+                    <div class="live-stat-label">Processing</div>
+                </div>
+                <div class="live-stat">
+                    <div class="live-stat-value" id="activeCount">0</div>
+                    <div class="live-stat-label">Active Sessions</div>
+                </div>
+            </div>
+
+            <div class="live-sessions" id="liveSessions">
+                <!-- Sessions will be populated by JS -->
+            </div>
+
+            <div class="live-section-divider" style="margin: 24px 0; border-top: 1px solid var(--border-color);"></div>
+
+            <div class="live-header" style="margin-bottom: 16px;">
+                <div class="live-title">
+                    Terminal Windows
+                    <span id="terminalWindowCount" style="font-size: 14px; color: var(--text-secondary); font-weight: normal;"></span>
+                </div>
+            </div>
+
+            <div class="live-sessions" id="terminalWindows">
+                <!-- Terminal windows will be populated by JS -->
+            </div>
+        </div>
+
+        <!-- Notification Settings Modal -->
+        <div class="modal-overlay" id="notificationModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <div class="modal-title">Notification Settings</div>
+                    <button class="modal-close" onclick="closeNotificationSettings()">&times;</button>
+                </div>
+
+                <div class="modal-section">
+                    <div class="modal-section-title">Alert When Session Is Waiting For</div>
+                    <label class="modal-checkbox">
+                        <input type="checkbox" id="notifyToolApproval" checked>
+                        Tool approval (Bash, Write, etc.)
+                    </label>
+                    <label class="modal-checkbox">
+                        <input type="checkbox" id="notifyUserInput" checked>
+                        Any user input
+                    </label>
+                </div>
+
+                <div class="modal-section">
+                    <div class="modal-section-title">Notification Methods</div>
+                    <label class="modal-checkbox">
+                        <input type="checkbox" id="notifySound" checked>
+                        Sound alert
+                    </label>
+                    <div class="modal-slider-group" id="volumeGroup">
+                        <div class="modal-slider-label">Volume: <span id="volumeValue">80</span>%</div>
+                        <input type="range" class="modal-slider" id="volumeSlider" min="0" max="100" value="80">
+                    </div>
+
+                    <label class="modal-checkbox">
+                        <input type="checkbox" id="notifyBrowser" checked>
+                        Browser notification
+                    </label>
+
+                    <label class="modal-checkbox">
+                        <input type="checkbox" id="notifyVisual" checked>
+                        Visual pulse indicator
+                    </label>
+                </div>
+
+                <div class="modal-section">
+                    <div class="modal-section-title">Timing</div>
+                    <label class="modal-checkbox">
+                        Poll interval: <input type="number" id="pollInterval" value="3" min="1" max="30" style="width: 60px; margin-left: 8px; padding: 4px; background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-primary);"> seconds
+                    </label>
+                    <label class="modal-checkbox" style="margin-top: 8px;">
+                        Alert cooldown: <input type="number" id="alertCooldown" value="30" min="5" max="300" style="width: 60px; margin-left: 8px; padding: 4px; background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-primary);"> seconds
+                    </label>
+                    <label class="modal-checkbox" style="margin-top: 8px;">
+                        Waiting delay: <input type="number" id="waitingDelay" value="20" min="0" max="120" style="width: 60px; margin-left: 8px; padding: 4px; background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-primary);"> seconds
+                        <span style="font-size: 11px; color: var(--text-muted); display: block; margin-top: 4px; margin-left: 0;">Only alert after waiting this long (0 = immediate)</span>
+                    </label>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="modal-btn modal-btn-test" onclick="testNotification()">Test Alert</button>
+                    <button class="modal-btn modal-btn-secondary" onclick="closeNotificationSettings()">Cancel</button>
+                    <button class="modal-btn modal-btn-primary" onclick="saveNotificationSettings()">Save</button>
+                </div>
+            </div>
         </div>
 
         <div class="suggestions-panel" id="suggestionsPanel">
@@ -1376,21 +1944,636 @@
             currentTab = tab;
             const historyPanel = document.getElementById('historyPanel');
             const suggestionsPanel = document.getElementById('suggestionsPanel');
+            const livePanel = document.getElementById('livePanel');
             const tabs = document.querySelectorAll('.suggestions-tab');
 
+            // Update tab active states
             tabs.forEach((t, i) => {
-                t.classList.toggle('active', (i === 0 && tab === 'history') || (i === 1 && tab === 'suggestions'));
+                const isActive = (i === 0 && tab === 'live') ||
+                                 (i === 1 && tab === 'history') ||
+                                 (i === 2 && tab === 'suggestions');
+                t.classList.toggle('active', isActive);
             });
 
-            if (tab === 'history') {
-                historyPanel.style.display = 'grid';
-                suggestionsPanel.classList.remove('active');
-            } else {
-                historyPanel.style.display = 'none';
-                suggestionsPanel.classList.add('active');
+            // Show/hide panels
+            historyPanel.style.display = tab === 'history' ? 'grid' : 'none';
+            suggestionsPanel.classList.toggle('active', tab === 'suggestions');
+            livePanel.classList.toggle('active', tab === 'live');
+
+            if (tab === 'suggestions') {
                 renderSuggestions();
+            } else if (tab === 'live') {
+                fetchRealtimeData(); // Immediate refresh when switching to live
             }
         }
+
+        // =====================
+        // Live Monitor
+        // =====================
+        let realtimeData = null;
+        let pollIntervalId = null;
+        let lastAlertTime = 0;
+        let alertDismissed = false;
+        let previousWaitingProjects = new Set();
+
+        // Notification settings (loaded from localStorage)
+        let notificationSettings = JSON.parse(localStorage.getItem('liveNotificationSettings') || JSON.stringify({
+            notifyToolApproval: true,
+            notifyUserInput: true,
+            notifySound: true,
+            notifyBrowser: true,
+            notifyVisual: true,
+            volume: 80,
+            pollInterval: 3,
+            alertCooldown: 30,
+            waitingDelay: 20  // Only alert after waiting this many seconds
+        }));
+
+        // Ensure waitingDelay exists for older stored settings
+        if (notificationSettings.waitingDelay === undefined) {
+            notificationSettings.waitingDelay = 20;
+        }
+
+        // Audio context for sound notifications
+        let audioContext = null;
+
+        function initAudioContext() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            return audioContext;
+        }
+
+        function playAlertSound() {
+            if (!notificationSettings.notifySound) return;
+
+            try {
+                const ctx = initAudioContext();
+                const oscillator = ctx.createOscillator();
+                const gainNode = ctx.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(ctx.destination);
+
+                oscillator.frequency.setValueAtTime(800, ctx.currentTime);
+                oscillator.frequency.setValueAtTime(600, ctx.currentTime + 0.1);
+                oscillator.frequency.setValueAtTime(800, ctx.currentTime + 0.2);
+
+                const volume = notificationSettings.volume / 100 * 0.3;
+                gainNode.gain.setValueAtTime(volume, ctx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+
+                oscillator.start(ctx.currentTime);
+                oscillator.stop(ctx.currentTime + 0.4);
+            } catch (e) {
+                console.error('Error playing sound:', e);
+            }
+        }
+
+        async function showBrowserNotification(title, body) {
+            if (!notificationSettings.notifyBrowser) return;
+
+            if (Notification.permission === 'default') {
+                await Notification.requestPermission();
+            }
+
+            if (Notification.permission === 'granted') {
+                new Notification(title, {
+                    body: body,
+                    icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🔔</text></svg>',
+                    tag: 'claude-live-alert'
+                });
+            }
+        }
+
+        function updateVisualIndicators(hasWaiting) {
+            const liveIndicator = document.getElementById('liveIndicator');
+            const liveTabIndicator = document.getElementById('liveTabIndicator');
+
+            if (hasWaiting && notificationSettings.notifyVisual) {
+                liveIndicator?.classList.add('alert');
+                liveTabIndicator?.classList.add('alert');
+            } else {
+                liveIndicator?.classList.remove('alert');
+                liveTabIndicator?.classList.remove('alert');
+            }
+        }
+
+        async function fetchRealtimeData() {
+            try {
+                const response = await fetch('/api/realtime');
+                if (!response.ok) throw new Error('Failed to fetch realtime data');
+                realtimeData = await response.json();
+
+                renderLivePanel();
+                checkForAlerts();
+
+                // Also fetch terminal windows
+                fetchTerminalWindows();
+            } catch (error) {
+                console.error('Error fetching realtime data:', error);
+                renderLiveError();
+            }
+        }
+
+        function checkForAlerts() {
+            if (!realtimeData) return;
+
+            const now = Date.now();
+            const cooldownMs = notificationSettings.alertCooldown * 1000;
+            const waitingDelaySeconds = notificationSettings.waitingDelay || 20;
+
+            // Filter sessions that have been waiting long enough
+            const sessionsWaitingLongEnough = (realtimeData.active_sessions || []).filter(s =>
+                (s.state === 'waiting_for_approval' || s.state === 'waiting_for_question') &&
+                s.idle_seconds >= waitingDelaySeconds
+            );
+
+            // Get projects with sessions waiting long enough
+            const currentWaitingProjects = new Set(sessionsWaitingLongEnough.map(s => s.project_name));
+            const newWaitingProjects = [...currentWaitingProjects].filter(p => !previousWaitingProjects.has(p));
+
+            // Check if we should trigger alerts
+            const shouldAlert = newWaitingProjects.length > 0 &&
+                               (now - lastAlertTime > cooldownMs) &&
+                               !alertDismissed;
+
+            // Check notification type filters (only for sessions waiting long enough)
+            const hasApprovalWaiting = sessionsWaitingLongEnough.some(s =>
+                s.state === 'waiting_for_approval' && notificationSettings.notifyToolApproval
+            );
+            const hasQuestionWaiting = sessionsWaitingLongEnough.some(s =>
+                s.state === 'waiting_for_question' && notificationSettings.notifyUserInput
+            );
+
+            const shouldNotify = hasApprovalWaiting || hasQuestionWaiting;
+
+            if (shouldAlert && shouldNotify) {
+                lastAlertTime = now;
+                alertDismissed = false;
+
+                // Play sound
+                playAlertSound();
+
+                // Show browser notification
+                const waitingCount = sessionsWaitingLongEnough.length;
+                const projects = newWaitingProjects.join(', ');
+                showBrowserNotification(
+                    `${waitingCount} session${waitingCount > 1 ? 's' : ''} waiting`,
+                    `Projects: ${projects}`
+                );
+
+                // Show alert banner
+                showAlertBanner();
+            }
+
+            // Always update visual indicators (show if any sessions waiting long enough)
+            updateVisualIndicators(sessionsWaitingLongEnough.length > 0);
+
+            // Update previous state
+            previousWaitingProjects = currentWaitingProjects;
+        }
+
+        function showAlertBanner() {
+            const banner = document.getElementById('liveAlertBanner');
+            const text = document.getElementById('liveAlertText');
+
+            if (realtimeData && banner && text) {
+                const count = realtimeData.waiting_count || 0;
+                const projects = realtimeData.projects_with_waiting?.join(', ') || '';
+                text.textContent = `${count} session${count > 1 ? 's' : ''} waiting for input (${projects})`;
+                banner.classList.add('active');
+            }
+        }
+
+        function dismissAlert() {
+            const banner = document.getElementById('liveAlertBanner');
+            banner?.classList.remove('active');
+            alertDismissed = true;
+
+            // Reset dismissed state after cooldown
+            setTimeout(() => {
+                alertDismissed = false;
+            }, notificationSettings.alertCooldown * 1000);
+        }
+
+        function renderLivePanel() {
+            if (!realtimeData) return;
+
+            // Update stats
+            document.getElementById('waitingCount').textContent = realtimeData.waiting_count || 0;
+            document.getElementById('processingCount').textContent = realtimeData.processing_count || 0;
+            document.getElementById('activeCount').textContent = realtimeData.active_sessions?.length || 0;
+
+            // Update live count badge
+            const liveCount = document.getElementById('liveCount');
+            if (liveCount) {
+                const waiting = realtimeData.waiting_count || 0;
+                liveCount.textContent = waiting > 0 ? `(${waiting})` : '';
+            }
+
+            // Update alert banner visibility
+            const banner = document.getElementById('liveAlertBanner');
+            if (realtimeData.waiting_count === 0) {
+                banner?.classList.remove('active');
+            }
+
+            // Render sessions
+            const sessionsContainer = document.getElementById('liveSessions');
+            const sessions = realtimeData.active_sessions || [];
+
+            if (sessions.length === 0) {
+                sessionsContainer.innerHTML = `
+                    <div class="live-empty">
+                        <div class="live-empty-icon">💤</div>
+                        <p>No active sessions</p>
+                        <p style="font-size: 12px; margin-top: 8px; color: var(--text-muted);">
+                            Start a Claude Code session in any project to see it here
+                        </p>
+                    </div>
+                `;
+                return;
+            }
+
+            sessionsContainer.innerHTML = sessions.map(session => {
+                const stateClass = session.state === 'waiting_for_approval' || session.state === 'waiting_for_question' ? 'waiting' :
+                                   session.state === 'processing' ? 'processing' :
+                                   session.state === 'task_complete' ? 'complete' : 'idle';
+                const stateLabel = session.state === 'waiting_for_approval' ? 'Needs Approval' :
+                                   session.state === 'waiting_for_question' ? 'Question' :
+                                   session.state === 'task_complete' ? 'Ready' :
+                                   session.state === 'processing' ? 'Processing' : 'Idle';
+
+                const idleText = session.idle_seconds < 60 ?
+                    `${session.idle_seconds}s ago` :
+                    `${Math.floor(session.idle_seconds / 60)}m ago`;
+
+                const modelShort = session.model?.includes('opus') ? 'Opus 4.5' :
+                                   session.model?.includes('sonnet') ? 'Sonnet' : session.model;
+
+                let approvalHtml = '';
+                if (session.pending_approval) {
+                    approvalHtml = `
+                        <div class="live-session-approval">
+                            <div class="live-session-approval-label">Pending: ${session.pending_approval.tool_name}</div>
+                            <div>${session.pending_approval.description || ''}</div>
+                        </div>
+                    `;
+                }
+
+                let previewHtml = '';
+                if (session.last_message_preview) {
+                    previewHtml = `<div class="live-session-preview">"${session.last_message_preview}"</div>`;
+                }
+
+                return `
+                    <div class="live-session-card ${stateClass}">
+                        <div class="live-session-header">
+                            <div class="live-session-project">
+                                ${session.project_name}
+                            </div>
+                            <span class="live-session-state ${stateClass}">${stateLabel}</span>
+                        </div>
+                        <div class="live-session-details">
+                            <div class="live-session-detail">
+                                <span>🕐</span> ${idleText}
+                            </div>
+                            ${session.last_tool ? `
+                                <div class="live-session-detail">
+                                    <span>🔧</span> ${session.last_tool.name}
+                                </div>
+                            ` : ''}
+                            <div class="live-session-detail">
+                                <span>🤖</span> ${modelShort}
+                            </div>
+                        </div>
+                        ${previewHtml}
+                        ${approvalHtml}
+                        <div class="live-session-actions">
+                            <button class="live-jump-btn" onclick="jumpToProject('${session.project_name}', '${session.project_path}', this)">
+                                ↗ Jump to Project
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderLiveError() {
+            const sessionsContainer = document.getElementById('liveSessions');
+            sessionsContainer.innerHTML = `
+                <div class="live-empty">
+                    <div class="live-empty-icon">⚠️</div>
+                    <p>Could not connect to server</p>
+                    <p style="font-size: 12px; margin-top: 8px; color: var(--text-muted);">
+                        Make sure you're running <code>python server.py</code>
+                    </p>
+                </div>
+            `;
+        }
+
+        // Terminal Windows
+        let terminalWindowsData = null;
+
+        async function fetchTerminalWindows() {
+            try {
+                const response = await fetch('/api/terminal-windows');
+                if (!response.ok) throw new Error('Failed to fetch terminal windows');
+                terminalWindowsData = await response.json();
+                renderTerminalWindows();
+            } catch (error) {
+                console.error('Error fetching terminal windows:', error);
+            }
+        }
+
+        function renderTerminalWindows() {
+            if (!terminalWindowsData) return;
+
+            const container = document.getElementById('terminalWindows');
+            const countSpan = document.getElementById('terminalWindowCount');
+
+            const windows = terminalWindowsData.windows || [];
+            const claudeCount = terminalWindowsData.claude_count || 0;
+
+            if (countSpan) {
+                countSpan.textContent = `(${claudeCount} Claude / ${windows.length} total)`;
+            }
+
+            if (windows.length === 0) {
+                container.innerHTML = `
+                    <div class="live-empty" style="padding: 30px;">
+                        <p style="color: var(--text-muted);">No Terminal windows open</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Group windows by project name
+            const projectGroups = {};
+            windows.forEach(win => {
+                const projectName = win.project_name || 'Unknown';
+                if (!projectGroups[projectName]) {
+                    projectGroups[projectName] = {
+                        windows: [],
+                        hasClaude: false,
+                        projectPath: win.project_path
+                    };
+                }
+                projectGroups[projectName].windows.push(win);
+                if (win.is_claude) {
+                    projectGroups[projectName].hasClaude = true;
+                }
+            });
+
+            // Sort projects: Claude projects first, then alphabetically
+            const sortedProjects = Object.keys(projectGroups).sort((a, b) => {
+                const aHasClaude = projectGroups[a].hasClaude;
+                const bHasClaude = projectGroups[b].hasClaude;
+                if (aHasClaude && !bHasClaude) return -1;
+                if (!aHasClaude && bHasClaude) return 1;
+                return a.localeCompare(b);
+            });
+
+            // Sort windows within each project by window_id for stability
+            sortedProjects.forEach(projectName => {
+                projectGroups[projectName].windows.sort((a, b) => a.window_id - b.window_id);
+            });
+
+            container.innerHTML = sortedProjects.map(projectName => {
+                const group = projectGroups[projectName];
+                const hasRecentActivity = realtimeData?.active_sessions?.some(
+                    s => s.project_name === projectName
+                );
+                const stateClass = group.hasClaude ? (hasRecentActivity ? 'processing' : 'idle') : 'idle';
+
+                const windowsList = group.windows.map(win => {
+                    const isClaude = win.is_claude;
+                    // Extract short description from window name (after the project name)
+                    let shortDesc = win.window_name;
+                    if (shortDesc.includes(' — ')) {
+                        const parts = shortDesc.split(' — ');
+                        shortDesc = parts.slice(1).join(' — ');
+                    }
+
+                    return `
+                        <div class="terminal-window-item" style="display: flex; align-items: center; gap: 12px; padding: 8px 12px; background: rgba(0,0,0,0.2); border-radius: 6px; margin-bottom: 6px;">
+                            <button class="live-jump-btn" style="font-size: 11px; padding: 4px 10px; flex-shrink: 0;" data-window-id="${win.window_id}" onclick="jumpToWindowById(${win.window_id}, this)">
+                                ↗ Jump
+                            </button>
+                            <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0;">
+                                ${isClaude ? '<span style="color: var(--accent-purple); font-size: 10px;">●</span>' : '<span style="color: var(--text-muted); font-size: 10px;">○</span>'}
+                                <span style="font-size: 12px; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                    ${shortDesc}
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                return `
+                    <div class="live-session-card ${stateClass}" style="margin-bottom: 16px;">
+                        <div class="live-session-header" style="margin-bottom: 12px;">
+                            <div class="live-session-project" style="font-size: 15px; font-weight: 600;">
+                                ${projectName}
+                                ${group.hasClaude ? '<span style="color: var(--accent-purple); font-size: 11px; margin-left: 8px;">Claude</span>' : ''}
+                            </div>
+                            <span style="font-size: 11px; color: var(--text-muted);">
+                                ${group.windows.length} window${group.windows.length > 1 ? 's' : ''}
+                            </span>
+                        </div>
+                        <div class="terminal-windows-list">
+                            ${windowsList}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function jumpToWindowById(windowId, button) {
+            console.log('jumpToWindowById called with windowId:', windowId, 'button data-window-id:', button.dataset.windowId);
+            const originalText = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = '⏳ Jumping...';
+
+            try {
+                // Use the data attribute as fallback
+                const idToUse = windowId || parseInt(button.dataset.windowId);
+                console.log('Sending request with window_id:', idToUse);
+
+                const response = await fetch('/api/focus-terminal-by-id', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ window_id: idToUse })
+                });
+
+                const result = await response.json();
+                console.log('Server response:', result);
+
+                if (result.success) {
+                    button.classList.add('success');
+                    button.innerHTML = '✓ Focused!';
+                    setTimeout(() => {
+                        button.classList.remove('success');
+                        button.innerHTML = originalText;
+                        button.disabled = false;
+                    }, 2000);
+                } else {
+                    button.classList.add('error');
+                    button.innerHTML = '✗ ' + (result.error || 'Failed');
+                    setTimeout(() => {
+                        button.classList.remove('error');
+                        button.innerHTML = originalText;
+                        button.disabled = false;
+                    }, 3000);
+                }
+            } catch (error) {
+                button.classList.add('error');
+                button.innerHTML = '✗ Error';
+                setTimeout(() => {
+                    button.classList.remove('error');
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                }, 3000);
+            }
+        }
+
+        async function jumpToProject(projectName, projectPath, button) {
+            const originalText = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = '⏳ Jumping...';
+
+            try {
+                const response = await fetch('/api/focus-terminal', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        project_name: projectName,
+                        project_path: projectPath
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    button.classList.add('success');
+                    button.innerHTML = '✓ Focused ' + result.terminal;
+                    setTimeout(() => {
+                        button.classList.remove('success');
+                        button.innerHTML = originalText;
+                        button.disabled = false;
+                    }, 2000);
+                } else {
+                    button.classList.add('error');
+                    button.innerHTML = '✗ ' + (result.error || 'Not found');
+                    setTimeout(() => {
+                        button.classList.remove('error');
+                        button.innerHTML = originalText;
+                        button.disabled = false;
+                    }, 3000);
+                }
+            } catch (error) {
+                button.classList.add('error');
+                button.innerHTML = '✗ Error';
+                setTimeout(() => {
+                    button.classList.remove('error');
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                }, 3000);
+            }
+        }
+
+        function startPolling() {
+            // Clear existing interval
+            if (pollIntervalId) {
+                clearInterval(pollIntervalId);
+            }
+
+            // Start new polling
+            const intervalMs = (notificationSettings.pollInterval || 3) * 1000;
+            pollIntervalId = setInterval(fetchRealtimeData, intervalMs);
+
+            // Initial fetch
+            fetchRealtimeData();
+        }
+
+        function stopPolling() {
+            if (pollIntervalId) {
+                clearInterval(pollIntervalId);
+                pollIntervalId = null;
+            }
+        }
+
+        // Notification Settings Modal
+        function openNotificationSettings() {
+            const modal = document.getElementById('notificationModal');
+            modal.classList.add('active');
+
+            // Load current settings into form
+            document.getElementById('notifyToolApproval').checked = notificationSettings.notifyToolApproval;
+            document.getElementById('notifyUserInput').checked = notificationSettings.notifyUserInput;
+            document.getElementById('notifySound').checked = notificationSettings.notifySound;
+            document.getElementById('notifyBrowser').checked = notificationSettings.notifyBrowser;
+            document.getElementById('notifyVisual').checked = notificationSettings.notifyVisual;
+            document.getElementById('volumeSlider').value = notificationSettings.volume;
+            document.getElementById('volumeValue').textContent = notificationSettings.volume;
+            document.getElementById('pollInterval').value = notificationSettings.pollInterval;
+            document.getElementById('alertCooldown').value = notificationSettings.alertCooldown;
+            document.getElementById('waitingDelay').value = notificationSettings.waitingDelay || 20;
+        }
+
+        function closeNotificationSettings() {
+            const modal = document.getElementById('notificationModal');
+            modal.classList.remove('active');
+        }
+
+        function saveNotificationSettings() {
+            notificationSettings = {
+                notifyToolApproval: document.getElementById('notifyToolApproval').checked,
+                notifyUserInput: document.getElementById('notifyUserInput').checked,
+                notifySound: document.getElementById('notifySound').checked,
+                notifyBrowser: document.getElementById('notifyBrowser').checked,
+                notifyVisual: document.getElementById('notifyVisual').checked,
+                volume: parseInt(document.getElementById('volumeSlider').value),
+                pollInterval: parseInt(document.getElementById('pollInterval').value) || 3,
+                alertCooldown: parseInt(document.getElementById('alertCooldown').value) || 30,
+                waitingDelay: parseInt(document.getElementById('waitingDelay').value) || 20
+            };
+
+            localStorage.setItem('liveNotificationSettings', JSON.stringify(notificationSettings));
+
+            // Restart polling with new interval
+            startPolling();
+
+            closeNotificationSettings();
+        }
+
+        function testNotification() {
+            playAlertSound();
+            showBrowserNotification('Test Alert', 'This is a test notification from Claude History Analyzer');
+        }
+
+        // Volume slider handler
+        document.getElementById('volumeSlider')?.addEventListener('input', (e) => {
+            document.getElementById('volumeValue').textContent = e.target.value;
+        });
+
+        // Close modal on overlay click
+        document.getElementById('notificationModal')?.addEventListener('click', (e) => {
+            if (e.target.id === 'notificationModal') {
+                closeNotificationSettings();
+            }
+        });
+
+        // Request notification permission on first interaction
+        document.addEventListener('click', function requestNotificationPermission() {
+            if (Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+            document.removeEventListener('click', requestNotificationPermission);
+        }, { once: true });
+
+        // Start polling when page loads
+        startPolling();
 
         // Suggestions
         let savedSuggestions = JSON.parse(localStorage.getItem('savedSuggestions') || '[]');

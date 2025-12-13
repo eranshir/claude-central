@@ -7,6 +7,7 @@
 ![Projects](https://img.shields.io/badge/Projects-Too%20Many-orange)
 ![ADHD](https://img.shields.io/badge/ADHD-Friendly-brightgreen)
 ![Beads](https://img.shields.io/badge/Beads-Integrated-yellow)
+![Live](https://img.shields.io/badge/Live-Monitoring-red)
 
 ## The Problem
 
@@ -46,6 +47,15 @@ Finally, you can answer: *"What was I working on in that recipe app last Thursda
 - **Search Everything** — Find that one session where you "fixed the auth thing" across all projects
 - **Date Filtering** — What did I do last week? Last month? Before my mass-deletion spree?
 - **Cron-Ready** — Runs daily in the background. Set it and forget it. (You will forget it. That's the point.)
+
+### Live Monitoring (New in v0.0.2!)
+
+- **Real-Time Session Tracking** — See all active Claude sessions across every project, updated every 3 seconds
+- **Smart State Detection** — Know when Claude needs approval, is asking a question, is processing, or has completed a task
+- **Configurable Alerts** — Sound notifications when any session waits too long for input (configurable delay, default 20s)
+- **Browser Notifications** — Get notified even when the tab is in the background
+- **Terminal Window Control** — Jump to any project's terminal with one click (even full-screen windows across Spaces!)
+- **Per-Project Window List** — See all terminal windows grouped by project for easy navigation
 
 ## Perfect For
 
@@ -196,6 +206,50 @@ The analyzer:
 6. **Discovers** [Beads](https://github.com/steveyegge/beads) issues in your projects
 7. **Renders** everything in a searchable web UI
 
+### Live Monitor
+
+The Live Monitor provides real-time observability across all your active Claude sessions:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ 🔴 LIVE MONITOR                                    [Settings]   │
+├─────────────────────────────────────────────────────────────────┤
+│  Waiting: 1  │  Processing: 2  │  Ready: 1  │  Idle: 3          │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│ ⚡ pet-tracker (Needs Approval · 25s ago)          [Jump]       │
+│   └─ Tool: Bash · Model: opus-4.5 · "Running npm install..."   │
+│                                                                 │
+│ 🔄 budgetapp (Processing · 3s ago)                 [Jump]       │
+│   └─ Tool: Edit · Model: opus-4.5 · Agent responding           │
+│                                                                 │
+│ ✅ ml-pipeline (Ready · 45s ago)                   [Jump]       │
+│   └─ Task complete · Waiting for next instruction              │
+│                                                                 │
+│ 💤 website (Idle · 12m ago)                        [Jump]       │
+│   └─ Last: Read · Session inactive                             │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**States:**
+- **Needs Approval** (orange) — Claude is waiting for tool approval (Bash, Write, etc.)
+- **Question** (orange) — Claude asked you a question
+- **Processing** (blue) — Claude is actively working
+- **Ready** (green) — Task complete, waiting for your next instruction
+- **Idle** (gray) — No activity for 5+ minutes
+
+**Alert Settings:**
+- Configurable waiting delay (default 20 seconds) — only alert after waiting this long
+- Sound notifications with volume control
+- Browser notifications (works in background tabs)
+- Visual indicators in the UI
+
+**Terminal Window Control:**
+- Click "Jump" to instantly focus that project's terminal window
+- Works even with full-screen windows across different macOS Spaces
+- Shows all terminal windows grouped by project
+
 ## Configuration
 
 | Option | Description |
@@ -227,6 +281,15 @@ A: If you use [Beads](https://github.com/steveyegge/beads) (the AI-friendly issu
 
 **Q: How do CLAUDE.md suggestions work?**
 A: When you run the analyzer with an API key, Claude analyzes your coding patterns across all projects and generates personalized instructions for your CLAUDE.md file. Click "Suggestions" tab, then "Add to CLAUDE.md" to save any suggestion. Suggestions include coding style preferences, best practices for your project types, and patterns it noticed in your work.
+
+**Q: What's the Live Monitor?**
+A: The Live tab shows real-time status of all your active Claude sessions. It detects when Claude needs approval, is asking a question, is processing, or has finished a task. You can configure alerts to sound after a session has been waiting for your input for a certain time (default 20 seconds).
+
+**Q: Why don't I get alerts immediately when Claude finishes?**
+A: By design! The "waiting delay" setting (default 20s) prevents alert spam. You only get notified if Claude has been waiting for approval or asking a question for longer than this threshold. When Claude completes a task and is just "Ready" for your next instruction, no alert fires — that's intentional.
+
+**Q: How does the "Jump to Terminal" feature work?**
+A: On macOS, clicking the Jump button uses AppleScript to focus the Terminal window for that project. It even works with full-screen windows across different Spaces — it uses the Terminal Window menu to switch, which bypasses the usual Space restrictions.
 
 **Q: I accidentally mass-deleted my ~/.claude folder. Can this help?**
 A: No. This tool reads history, it doesn't create it. I'm sorry for your loss. 🕯️
