@@ -1569,14 +1569,22 @@
             renderProjectList();
             updateSuggestionsCount();
 
-            // Select last used project, or first project if none saved
+            // Select last used project, or project with most recent activity if none saved
             const projects = Object.keys(historyData.projects);
             if (projects.length > 0) {
                 const lastProject = localStorage.getItem('lastSelectedProject');
                 if (lastProject && projects.includes(lastProject)) {
                     selectProject(lastProject);
                 } else {
-                    selectProject(projects[0]);
+                    // Find project with most recent activity (latest day)
+                    const projectsByRecency = projects
+                        .map(path => {
+                            const days = Object.keys(historyData.projects[path].days || {});
+                            const latestDay = days.sort().reverse()[0] || '0000-00-00';
+                            return { path, latestDay };
+                        })
+                        .sort((a, b) => b.latestDay.localeCompare(a.latestDay));
+                    selectProject(projectsByRecency[0].path);
                 }
             }
 
