@@ -1,4 +1,4 @@
-# Claude Code History Analyzer
+# Claude Central
 
 > *"Wait, which project was I working on? And did that agent ever finish the refactor?"* — You, probably
 
@@ -112,8 +112,8 @@ Your command center for multi-project chaos:
 
 ```bash
 # Clone the repo
-git clone https://github.com/eranshir/claudeHistory.git
-cd claudeHistory
+git clone https://github.com/eranshir/claude-central.git
+cd claude-central
 
 # Install dependencies
 pip install anthropic
@@ -157,7 +157,7 @@ Because you *will* forget to run this manually:
 crontab -e
 
 # Add this line (runs daily at 9 PM)
-0 21 * * * /path/to/claudeHistory/run_analyzer.sh
+0 21 * * * /path/to/claude-central/run_analyzer.sh
 ```
 
 Now your history updates itself while you're busy starting another project.
