@@ -22,7 +22,7 @@ if not api_key:
     print("Error: ANTHROPIC_API_KEY not found")
     exit(1)
 
-print(f"API key: {api_key[:15]}...")
+print("API key: [configured]")
 
 # Load existing data
 data_file = Path(__file__).parent / "history_data.json"

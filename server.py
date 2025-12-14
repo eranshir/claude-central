@@ -27,6 +27,19 @@ class TerminalFocuser:
     """Focuses terminal windows by searching for project name in window/tab titles."""
 
     @staticmethod
+    def _sanitize_applescript_string(text: str) -> str:
+        """Sanitize a string for safe use in AppleScript to prevent injection."""
+        if not text:
+            return ""
+        # Escape backslashes first, then quotes
+        sanitized = text.replace("\\", "\\\\").replace('"', '\\"')
+        # Remove any other potentially dangerous characters
+        # Only allow alphanumeric, spaces, hyphens, underscores, and dots
+        import re
+        sanitized = re.sub(r'[^\w\s\-._]', '', sanitized)
+        return sanitized
+
+    @staticmethod
     def list_terminal_windows() -> list:
         """List all Terminal.app windows and extract project info."""
         import subprocess
@@ -242,6 +255,9 @@ class TerminalFocuser:
         """Try to focus iTerm2 window/tab containing search term."""
         import subprocess
 
+        # Sanitize search term to prevent AppleScript injection
+        safe_search_term = TerminalFocuser._sanitize_applescript_string(search_term)
+
         # AppleScript to search iTerm2 windows and tabs
         script = f'''
         tell application "System Events"
@@ -256,7 +272,7 @@ class TerminalFocuser:
                 repeat with t in tabs of w
                     repeat with s in sessions of t
                         set sessionName to name of s
-                        if sessionName contains "{search_term}" then
+                        if sessionName contains "{safe_search_term}" then
                             select t
                             select w
                             activate
@@ -295,6 +311,9 @@ class TerminalFocuser:
         """Try to focus Terminal.app window/tab containing search term."""
         import subprocess
 
+        # Sanitize search term to prevent AppleScript injection
+        safe_search_term = TerminalFocuser._sanitize_applescript_string(search_term)
+
         # AppleScript to search Terminal.app windows by name
         script = f'''
         tell application "System Events"
@@ -306,7 +325,7 @@ class TerminalFocuser:
         tell application "Terminal"
             repeat with w in windows
                 set windowName to name of w
-                if windowName contains "{search_term}" then
+                if windowName contains "{safe_search_term}" then
                     set index of w to 1
                     activate
                     return "found"
@@ -405,9 +424,9 @@ class RealtimeScanner:
                         result["processing_count"] += 1
                     # task_complete is not counted as waiting (no alert needed)
 
-        # Sort by last activity (most recent first)
+        # Sort by last activity (most recent first), handle None values
         result["active_sessions"].sort(
-            key=lambda x: x.get("last_activity", ""), reverse=True
+            key=lambda x: x.get("last_activity") or "", reverse=True
         )
 
         return result
@@ -704,18 +723,22 @@ class HistoryHandler(http.server.SimpleHTTPRequestHandler):
         except Exception as e:
             self.send_json_response({"error": str(e)}, 500)
 
+    def _get_cors_origin(self) -> str:
+        """Get the allowed CORS origin (localhost only for security)."""
+        return f"http://localhost:{PORT}"
+
     def send_json_response(self, data: dict, status_code: int = 200):
         """Send a JSON response."""
         self.send_response(status_code)
         self.send_header("Content-Type", "application/json")
-        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Origin", self._get_cors_origin())
         self.end_headers()
         self.wfile.write(json.dumps(data).encode("utf-8"))
 
     def do_OPTIONS(self):
         """Handle CORS preflight requests."""
         self.send_response(200)
-        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Origin", self._get_cors_origin())
         self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.end_headers()
