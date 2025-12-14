@@ -3,7 +3,7 @@
 #
 # Add to crontab with: crontab -e
 # Example (run daily at 9 PM):
-#   0 21 * * * /Users/eranshir/Documents/Projects/claudeHistory/run_analyzer.sh
+#   0 21 * * * /path/to/claude-central/run_analyzer.sh
 #
 
 # Change to script directory
@@ -22,8 +22,8 @@ LOG_FILE="$SCRIPT_DIR/analyzer.log"
 echo "=== Claude History Analyzer ===" >> "$LOG_FILE"
 echo "Started at: $(date)" >> "$LOG_FILE"
 
-# Use mambaforge python (has anthropic installed)
-PYTHON="/Users/eranshir/mambaforge/bin/python3"
+# Use the project's virtual environment
+PYTHON="$SCRIPT_DIR/venv/bin/python3"
 "$PYTHON" "$SCRIPT_DIR/claude_history_analyzer.py" --output "$SCRIPT_DIR/history_data.json" 2>&1 | tee -a "$LOG_FILE"
 
 echo "Finished at: $(date)" >> "$LOG_FILE"
