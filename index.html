@@ -408,6 +408,163 @@
             color: var(--accent-blue);
         }
 
+        /* Project Search */
+        .project-search-container {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+        }
+
+        .project-search-wrapper {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .project-search-input {
+            flex: 1;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 10px 14px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .project-search-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.2);
+        }
+
+        .project-search-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .project-search-btn {
+            background: var(--accent-blue);
+            border: none;
+            border-radius: 6px;
+            padding: 10px 16px;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.15s;
+        }
+
+        .project-search-btn:hover {
+            background: #4c9aed;
+        }
+
+        .project-search-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .search-results-container {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-primary);
+        }
+
+        .search-results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .search-results-title {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .search-results-count {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .search-results-close {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 18px;
+            padding: 4px 8px;
+        }
+
+        .search-results-close:hover {
+            color: var(--text-primary);
+        }
+
+        .search-result-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 8px;
+        }
+
+        .search-result-meta {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .search-result-source {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .search-result-source.user {
+            background: rgba(88, 166, 255, 0.15);
+            color: var(--accent-blue);
+        }
+
+        .search-result-source.assistant {
+            background: rgba(163, 113, 247, 0.15);
+            color: var(--accent-purple);
+        }
+
+        .search-result-source.tool {
+            background: rgba(63, 185, 80, 0.15);
+            color: var(--accent-green);
+        }
+
+        .search-result-source.tool_result {
+            background: rgba(210, 153, 34, 0.15);
+            color: var(--accent-orange);
+        }
+
+        .search-result-context {
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--text-primary);
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .search-result-context mark {
+            background: rgba(210, 153, 34, 0.4);
+            color: inherit;
+            padding: 1px 2px;
+            border-radius: 2px;
+        }
+
+        .search-loading {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+        }
+
         .timeline {
             padding: 20px;
         }
@@ -2008,12 +2165,33 @@
                    </a>`
                 : '';
 
+            // Build the search box HTML
+            const searchBoxHtml = `
+                <div class="project-search-container">
+                    <div class="project-search-wrapper">
+                        <input type="text"
+                               class="project-search-input"
+                               id="projectSearchInput"
+                               placeholder="Search through conversation history..."
+                               onkeydown="if(event.key === 'Enter') searchProjectHistory()">
+                        <button class="project-search-btn" onclick="searchProjectHistory()" id="projectSearchBtn">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                            </svg>
+                            Search
+                        </button>
+                    </div>
+                </div>
+                <div id="projectSearchResults"></div>
+            `;
+
             if (filteredDays.length === 0) {
                 contentArea.innerHTML = `
                     <div class="content-header">
                         <h2 class="content-title">${escapeHtml(project.name)}</h2>
                         ${githubLink}
                     </div>
+                    ${searchBoxHtml}
                     <div class="empty-state">
                         <svg viewBox="0 0 24 24" fill="currentColor">
                             <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
@@ -2029,6 +2207,7 @@
                     <h2 class="content-title">${escapeHtml(project.name)}</h2>
                     ${githubLink}
                 </div>
+                ${searchBoxHtml}
                 <div class="timeline">
                     ${renderBeadsSection(project.beads)}
                     ${filteredDays.map(([date, day]) => renderDay(date, day)).join('')}
@@ -2050,12 +2229,12 @@
                         <span class="day-date">${formattedDate}</span>
                         ${day.summary ? `<span class="day-summary">${highlightSearch(escapeHtml(day.summary.substring(0, 100)))}</span>` : ''}
                     </div>
-                    ${(day.sessions || []).map(renderSession).join('')}
+                    ${(day.sessions || []).map((session, index) => renderSession(session, date, index)).join('')}
                 </div>
             `;
         }
 
-        function renderSession(session) {
+        function renderSession(session, date, index) {
             const startTime = session.start_time
                 ? new Date(session.start_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
                 : '';
@@ -2066,7 +2245,9 @@
 
             const commitCount = (session.commits || []).length;
             const messageCount = session.message_count || 0;
-            const sessionId = session.session_id || Math.random().toString(36).substr(2, 9);
+            // Create unique ID by combining date, index, and session_id to avoid collisions
+            const baseSessionId = session.session_id || Math.random().toString(36).substr(2, 9);
+            const sessionId = `${date}-${index}-${baseSessionId.substring(0, 8)}`;
 
             // Format summary - handle bullet points
             let formattedSummary = session.summary || 'No summary available';
@@ -3340,6 +3521,154 @@
                 console.error('Error disabling auto-refresh:', error);
                 alert('Error disabling auto-refresh: ' + error.message);
             }
+        }
+
+        // =====================
+        // Project History Search
+        // =====================
+
+        let lastProjectSearchQuery = '';
+
+        async function searchProjectHistory() {
+            if (!selectedProject) return;
+
+            const input = document.getElementById('projectSearchInput');
+            const btn = document.getElementById('projectSearchBtn');
+            const resultsContainer = document.getElementById('projectSearchResults');
+            const query = input.value.trim();
+
+            if (!query) {
+                resultsContainer.innerHTML = '';
+                return;
+            }
+
+            if (query.length < 2) {
+                resultsContainer.innerHTML = `
+                    <div class="search-results-container">
+                        <p style="color: var(--text-muted); text-align: center;">Please enter at least 2 characters</p>
+                    </div>
+                `;
+                return;
+            }
+
+            lastProjectSearchQuery = query;
+
+            // Show loading state
+            btn.disabled = true;
+            resultsContainer.innerHTML = `
+                <div class="search-results-container">
+                    <div class="search-loading">
+                        <div class="spinner"></div>
+                        Searching through conversation history...
+                    </div>
+                </div>
+            `;
+
+            try {
+                const response = await fetch('/api/search-project', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        project_path: selectedProject,
+                        query: query,
+                        max_results: 50
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    resultsContainer.innerHTML = `
+                        <div class="search-results-container">
+                            <p style="color: #da3633; text-align: center;">Error: ${escapeHtml(data.error)}</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                renderSearchResults(data.results, data.total, query);
+
+            } catch (error) {
+                console.error('Search error:', error);
+                resultsContainer.innerHTML = `
+                    <div class="search-results-container">
+                        <p style="color: #da3633; text-align: center;">Search failed: ${escapeHtml(error.message)}</p>
+                    </div>
+                `;
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        function renderSearchResults(results, total, query) {
+            const container = document.getElementById('projectSearchResults');
+
+            if (results.length === 0) {
+                container.innerHTML = `
+                    <div class="search-results-container">
+                        <div class="search-results-header">
+                            <span class="search-results-title">No results found for "${escapeHtml(query)}"</span>
+                            <button class="search-results-close" onclick="clearProjectSearch()">&times;</button>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            const resultsHtml = results.map(result => {
+                const timestamp = result.timestamp
+                    ? new Date(result.timestamp).toLocaleString()
+                    : 'Unknown time';
+
+                // Highlight the search term in the context
+                const highlightedContext = highlightSearchTerm(escapeHtml(result.context), query);
+
+                return `
+                    <div class="search-result-item">
+                        <div class="search-result-meta">
+                            <span class="search-result-source ${result.source}">${result.source}</span>
+                            <span>${timestamp}</span>
+                        </div>
+                        <div class="search-result-context">${highlightedContext}</div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = `
+                <div class="search-results-container">
+                    <div class="search-results-header">
+                        <div>
+                            <span class="search-results-title">Search Results</span>
+                            <span class="search-results-count">${total} match${total !== 1 ? 'es' : ''} for "${escapeHtml(query)}"</span>
+                        </div>
+                        <button class="search-results-close" onclick="clearProjectSearch()">&times;</button>
+                    </div>
+                    <div class="search-results-list" style="max-height: 400px; overflow-y: auto;">
+                        ${resultsHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        function highlightSearchTerm(text, query) {
+            if (!query) return text;
+
+            // Case-insensitive replacement with mark tags
+            const regex = new RegExp(`(${escapeRegex(query)})`, 'gi');
+            return text.replace(regex, '<mark>$1</mark>');
+        }
+
+        function escapeRegex(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        function clearProjectSearch() {
+            const input = document.getElementById('projectSearchInput');
+            const container = document.getElementById('projectSearchResults');
+
+            if (input) input.value = '';
+            if (container) container.innerHTML = '';
+            lastProjectSearchQuery = '';
         }
 
         // Initialize

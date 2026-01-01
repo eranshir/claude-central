@@ -542,6 +542,8 @@ class HistoryHandler(http.server.SimpleHTTPRequestHandler):
             self.handle_setup_cronjob()
         elif parsed_path.path == "/api/remove-cronjob":
             self.handle_remove_cronjob()
+        elif parsed_path.path == "/api/search-project":
+            self.handle_search_project()
         else:
             self.send_error(404, "Not Found")
 
@@ -811,6 +813,149 @@ class HistoryHandler(http.server.SimpleHTTPRequestHandler):
                     "error": f"Failed to remove cron job: {stderr}"
                 }, 500)
 
+        except Exception as e:
+            self.send_json_response({"error": str(e)}, 500)
+
+    def handle_search_project(self):
+        """Search through conversation history for a project."""
+        import re
+        try:
+            content_length = int(self.headers.get("Content-Length", 0))
+            body = self.rfile.read(content_length).decode("utf-8")
+            data = json.loads(body)
+
+            project_path = data.get("project_path", "")
+            query = data.get("query", "").strip().lower()
+            max_results = data.get("max_results", 50)
+
+            if not project_path or not query:
+                self.send_json_response({
+                    "error": "project_path and query are required"
+                }, 400)
+                return
+
+            # Convert project path to directory name format
+            # e.g., /Users/eranshir/Projects/foo -> -Users-eranshir-Projects-foo
+            dir_name = project_path.replace("/", "-")
+            if dir_name.startswith("-"):
+                dir_name = dir_name  # Keep the leading dash
+            else:
+                dir_name = "-" + dir_name
+
+            project_dir = CLAUDE_PROJECTS_DIR / dir_name
+
+            if not project_dir.exists():
+                self.send_json_response({
+                    "results": [],
+                    "total": 0,
+                    "message": "Project directory not found"
+                }, 200)
+                return
+
+            results = []
+
+            # Search through all session files
+            for session_file in project_dir.glob("*.jsonl"):
+                if session_file.name.startswith("agent-"):
+                    continue  # Skip agent files
+
+                try:
+                    with open(session_file, "r") as f:
+                        lines = f.readlines()
+
+                    for line_num, line in enumerate(lines):
+                        try:
+                            entry = json.loads(line.strip())
+
+                            # Extract searchable text based on entry type
+                            searchable_texts = []
+                            entry_type = entry.get("type", "")
+                            timestamp = entry.get("timestamp", "")
+
+                            if entry_type == "user":
+                                # User message
+                                message = entry.get("message", {})
+                                if isinstance(message, dict):
+                                    content = message.get("content", "")
+                                    if isinstance(content, str):
+                                        searchable_texts.append(("user", content))
+                                    elif isinstance(content, list):
+                                        for item in content:
+                                            if isinstance(item, dict) and item.get("type") == "text":
+                                                searchable_texts.append(("user", item.get("text", "")))
+                                elif isinstance(message, str):
+                                    searchable_texts.append(("user", message))
+
+                            elif entry_type == "assistant":
+                                # Assistant message
+                                message = entry.get("message", {})
+                                content = message.get("content", [])
+                                if isinstance(content, list):
+                                    for item in content:
+                                        if isinstance(item, dict):
+                                            if item.get("type") == "text":
+                                                searchable_texts.append(("assistant", item.get("text", "")))
+                                            elif item.get("type") == "tool_use":
+                                                tool_name = item.get("name", "")
+                                                tool_input = json.dumps(item.get("input", {}))
+                                                searchable_texts.append(("tool", f"{tool_name}: {tool_input}"))
+
+                            elif entry_type == "tool_result":
+                                # Tool result
+                                content = entry.get("content", "")
+                                if isinstance(content, str):
+                                    searchable_texts.append(("tool_result", content))
+
+                            # Search through extracted texts
+                            for source, text in searchable_texts:
+                                if query in text.lower():
+                                    # Find the matching portion with context
+                                    lower_text = text.lower()
+                                    match_pos = lower_text.find(query)
+
+                                    # Extract context around the match
+                                    start = max(0, match_pos - 100)
+                                    end = min(len(text), match_pos + len(query) + 100)
+                                    context = text[start:end]
+
+                                    # Add ellipsis if truncated
+                                    if start > 0:
+                                        context = "..." + context
+                                    if end < len(text):
+                                        context = context + "..."
+
+                                    results.append({
+                                        "session_id": session_file.stem,
+                                        "timestamp": timestamp,
+                                        "source": source,
+                                        "context": context,
+                                        "match_position": match_pos
+                                    })
+
+                                    if len(results) >= max_results:
+                                        break
+
+                        except json.JSONDecodeError:
+                            continue
+
+                    if len(results) >= max_results:
+                        break
+
+                except Exception as e:
+                    print(f"Error reading session file {session_file}: {e}")
+                    continue
+
+            # Sort by timestamp (most recent first)
+            results.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
+
+            self.send_json_response({
+                "results": results[:max_results],
+                "total": len(results),
+                "query": query
+            }, 200)
+
+        except json.JSONDecodeError:
+            self.send_json_response({"error": "Invalid JSON"}, 400)
         except Exception as e:
             self.send_json_response({"error": str(e)}, 500)
 
