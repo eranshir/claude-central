@@ -181,6 +181,200 @@
             border-radius: 10px;
         }
 
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .sidebar-header h2 {
+            margin-bottom: 0;
+        }
+
+        .sidebar-actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+        }
+
+        .icon-btn:hover {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .icon-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .icon-btn.spinning svg {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Auto-refresh Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 24px;
+            line-height: 1;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .status-badge.enabled {
+            background: rgba(63, 185, 80, 0.15);
+            color: var(--accent-green);
+        }
+
+        .status-badge.disabled {
+            background: rgba(139, 148, 158, 0.15);
+            color: var(--text-secondary);
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.15s;
+        }
+
+        .btn-primary {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #4c9aed;
+        }
+
+        .btn-danger {
+            background: #da3633;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c62828;
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+
         .content-area {
             background-color: var(--bg-secondary);
             border: 1px solid var(--border-color);
@@ -1547,13 +1741,67 @@
             </div>
         </div>
 
+        <!-- Auto-refresh Settings Modal -->
+        <div class="modal-overlay" id="autoRefreshModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <div class="modal-title">Auto-Refresh Settings</div>
+                    <button class="modal-close" onclick="closeAutoRefreshSettings()">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">Current Status</label>
+                        <div id="cronjobStatus">
+                            <span class="status-badge disabled">Loading...</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Refresh Interval</label>
+                        <select class="form-select" id="refreshInterval">
+                            <option value="15">Every 15 minutes</option>
+                            <option value="30" selected>Every 30 minutes</option>
+                            <option value="60">Every hour</option>
+                            <option value="120">Every 2 hours</option>
+                        </select>
+                        <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">
+                            Sets up a cron job to automatically regenerate history data, so new projects appear without manual refresh.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-danger" id="disableCronjobBtn" onclick="disableAutoRefresh()" style="margin-right: auto; display: none;">Disable</button>
+                    <button class="btn btn-secondary" onclick="closeAutoRefreshSettings()">Cancel</button>
+                    <button class="btn btn-primary" onclick="enableAutoRefresh()">Enable Auto-Refresh</button>
+                </div>
+            </div>
+        </div>
+
         <div class="suggestions-panel" id="suggestionsPanel">
             <!-- Suggestions will be populated by JS -->
         </div>
 
         <div class="main-content" id="historyPanel">
             <aside class="sidebar">
-                <h2>Projects</h2>
+                <div class="sidebar-header">
+                    <h2>Projects</h2>
+                    <div class="sidebar-actions">
+                        <button class="icon-btn" id="refreshBtn" onclick="refreshHistoryData()" title="Refresh project data">
+                            <svg id="refreshIcon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+                                <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+                            </svg>
+                        </button>
+                        <button class="icon-btn" onclick="openAutoRefreshSettings()" title="Auto-refresh settings">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/>
+                                <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
                 <ul class="project-list" id="projectList">
                     <!-- Projects will be populated by JS -->
                 </ul>
@@ -2943,6 +3191,154 @@
             const countSpan = document.getElementById('suggestionsCount');
             if (countSpan && count > 0) {
                 countSpan.textContent = `(${count})`;
+            }
+        }
+
+        // =====================
+        // Refresh & Auto-refresh
+        // =====================
+
+        async function refreshHistoryData() {
+            const btn = document.getElementById('refreshBtn');
+            const icon = document.getElementById('refreshIcon');
+
+            // Show spinning state
+            btn.disabled = true;
+            btn.classList.add('spinning');
+
+            try {
+                // Call the API to regenerate history_data.json
+                const response = await fetch('/api/refresh-data', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Reload the data
+                    const dataResponse = await fetch(`history_data.json?t=${Date.now()}`);
+                    if (dataResponse.ok) {
+                        historyData = await dataResponse.json();
+                        renderStats();
+                        renderProjectList();
+                        if (selectedProject) {
+                            renderProjectContent(selectedProject);
+                        }
+                    }
+                } else {
+                    console.error('Failed to refresh data:', result.error || result.stderr);
+                    alert('Failed to refresh data: ' + (result.error || result.stderr || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error refreshing data:', error);
+                alert('Error refreshing data: ' + error.message);
+            } finally {
+                // Remove spinning state
+                btn.disabled = false;
+                btn.classList.remove('spinning');
+            }
+        }
+
+        async function openAutoRefreshSettings() {
+            const modal = document.getElementById('autoRefreshModal');
+            modal.classList.add('active');
+
+            // Load current status
+            await loadCronjobStatus();
+        }
+
+        function closeAutoRefreshSettings() {
+            const modal = document.getElementById('autoRefreshModal');
+            modal.classList.remove('active');
+        }
+
+        async function loadCronjobStatus() {
+            const statusDiv = document.getElementById('cronjobStatus');
+            const disableBtn = document.getElementById('disableCronjobBtn');
+            const intervalSelect = document.getElementById('refreshInterval');
+
+            try {
+                const response = await fetch('/api/cronjob-status');
+                const data = await response.json();
+
+                if (data.enabled) {
+                    statusDiv.innerHTML = `
+                        <span class="status-badge enabled">
+                            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/>
+                            </svg>
+                            Enabled - refreshes every ${data.interval_minutes} minutes
+                        </span>
+                    `;
+                    disableBtn.style.display = 'block';
+
+                    // Set the dropdown to match current interval
+                    if (data.interval_minutes) {
+                        intervalSelect.value = data.interval_minutes;
+                    }
+                } else {
+                    statusDiv.innerHTML = `
+                        <span class="status-badge disabled">
+                            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M8 0a8 8 0 100 16A8 8 0 008 0zM1.5 8a6.5 6.5 0 1113 0 6.5 6.5 0 01-13 0z"/>
+                            </svg>
+                            Disabled
+                        </span>
+                    `;
+                    disableBtn.style.display = 'none';
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `
+                    <span class="status-badge disabled">Error checking status</span>
+                `;
+                console.error('Error loading cronjob status:', error);
+            }
+        }
+
+        async function enableAutoRefresh() {
+            const intervalSelect = document.getElementById('refreshInterval');
+            const interval = parseInt(intervalSelect.value, 10);
+
+            try {
+                const response = await fetch('/api/setup-cronjob', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ interval_minutes: interval })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    await loadCronjobStatus();
+                    alert('Auto-refresh enabled! History data will be refreshed every ' + interval + ' minutes.');
+                } else {
+                    alert('Failed to enable auto-refresh: ' + (result.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error enabling auto-refresh:', error);
+                alert('Error enabling auto-refresh: ' + error.message);
+            }
+        }
+
+        async function disableAutoRefresh() {
+            try {
+                const response = await fetch('/api/remove-cronjob', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    await loadCronjobStatus();
+                    alert('Auto-refresh disabled.');
+                } else {
+                    alert('Failed to disable auto-refresh: ' + (result.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error disabling auto-refresh:', error);
+                alert('Error disabling auto-refresh: ' + error.message);
             }
         }
 

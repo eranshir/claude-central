@@ -536,6 +536,12 @@ class HistoryHandler(http.server.SimpleHTTPRequestHandler):
             self.handle_focus_terminal_by_index()
         elif parsed_path.path == "/api/focus-terminal-by-id":
             self.handle_focus_terminal_by_id()
+        elif parsed_path.path == "/api/refresh-data":
+            self.handle_refresh_data()
+        elif parsed_path.path == "/api/setup-cronjob":
+            self.handle_setup_cronjob()
+        elif parsed_path.path == "/api/remove-cronjob":
+            self.handle_remove_cronjob()
         else:
             self.send_error(404, "Not Found")
 
@@ -655,6 +661,159 @@ class HistoryHandler(http.server.SimpleHTTPRequestHandler):
         except Exception as e:
             self.send_json_response({"error": str(e)}, 500)
 
+    def handle_refresh_data(self):
+        """Regenerate history_data.json by running the analyzer."""
+        import subprocess
+        try:
+            # Run the analyzer script with --no-api flag for faster refresh
+            script_path = Path(__file__).parent / "claude_history_analyzer.py"
+            result = subprocess.run(
+                ["python3", str(script_path), "--no-api"],
+                capture_output=True,
+                text=True,
+                timeout=120  # 2 minute timeout
+            )
+
+            if result.returncode == 0:
+                self.send_json_response({
+                    "success": True,
+                    "message": "History data refreshed successfully",
+                    "output": result.stdout[-500:] if result.stdout else ""
+                }, 200)
+            else:
+                self.send_json_response({
+                    "success": False,
+                    "error": "Analyzer failed",
+                    "stderr": result.stderr[-500:] if result.stderr else ""
+                }, 500)
+
+        except subprocess.TimeoutExpired:
+            self.send_json_response({
+                "success": False,
+                "error": "Refresh timed out after 2 minutes"
+            }, 500)
+        except Exception as e:
+            self.send_json_response({"error": str(e)}, 500)
+
+    def handle_setup_cronjob(self):
+        """Set up a cron job for periodic data refresh."""
+        import subprocess
+        try:
+            content_length = int(self.headers.get("Content-Length", 0))
+            body = self.rfile.read(content_length).decode("utf-8")
+            data = json.loads(body) if body else {}
+
+            # Default to every 30 minutes
+            interval_minutes = data.get("interval_minutes", 30)
+
+            script_path = Path(__file__).parent / "claude_history_analyzer.py"
+            cron_command = f"cd {Path(__file__).parent} && /usr/bin/python3 {script_path} --no-api > /dev/null 2>&1"
+            cron_entry = f"*/{interval_minutes} * * * * {cron_command}"
+
+            # Get current crontab
+            result = subprocess.run(
+                ["crontab", "-l"],
+                capture_output=True,
+                text=True
+            )
+            current_crontab = result.stdout if result.returncode == 0 else ""
+
+            # Remove any existing claude history analyzer entries
+            lines = [line for line in current_crontab.split("\n")
+                    if "claude_history_analyzer" not in line and line.strip()]
+
+            # Add new entry
+            lines.append(cron_entry)
+            new_crontab = "\n".join(lines) + "\n"
+
+            # Install new crontab
+            process = subprocess.Popen(
+                ["crontab", "-"],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True
+            )
+            stdout, stderr = process.communicate(input=new_crontab)
+
+            if process.returncode == 0:
+                self.send_json_response({
+                    "success": True,
+                    "message": f"Cron job set up to refresh every {interval_minutes} minutes",
+                    "cron_entry": cron_entry
+                }, 200)
+            else:
+                self.send_json_response({
+                    "success": False,
+                    "error": f"Failed to set up cron job: {stderr}"
+                }, 500)
+
+        except json.JSONDecodeError:
+            self.send_json_response({"error": "Invalid JSON"}, 400)
+        except Exception as e:
+            self.send_json_response({"error": str(e)}, 500)
+
+    def handle_remove_cronjob(self):
+        """Remove the periodic refresh cron job."""
+        import subprocess
+        try:
+            # Get current crontab
+            result = subprocess.run(
+                ["crontab", "-l"],
+                capture_output=True,
+                text=True
+            )
+
+            if result.returncode != 0:
+                self.send_json_response({
+                    "success": True,
+                    "message": "No crontab exists"
+                }, 200)
+                return
+
+            current_crontab = result.stdout
+
+            # Remove claude history analyzer entries
+            lines = [line for line in current_crontab.split("\n")
+                    if "claude_history_analyzer" not in line and line.strip()]
+
+            if len(lines) == len([l for l in current_crontab.split("\n") if l.strip()]):
+                self.send_json_response({
+                    "success": True,
+                    "message": "No Claude History cron job found"
+                }, 200)
+                return
+
+            new_crontab = "\n".join(lines) + "\n" if lines else ""
+
+            # Install new crontab (or remove if empty)
+            if new_crontab.strip():
+                process = subprocess.Popen(
+                    ["crontab", "-"],
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    text=True
+                )
+                stdout, stderr = process.communicate(input=new_crontab)
+            else:
+                process = subprocess.run(["crontab", "-r"], capture_output=True, text=True)
+                stderr = process.stderr
+
+            if process.returncode == 0:
+                self.send_json_response({
+                    "success": True,
+                    "message": "Cron job removed successfully"
+                }, 200)
+            else:
+                self.send_json_response({
+                    "success": False,
+                    "error": f"Failed to remove cron job: {stderr}"
+                }, 500)
+
+        except Exception as e:
+            self.send_json_response({"error": str(e)}, 500)
+
     def do_GET(self):
         """Handle GET requests - serve static files or API endpoints."""
         parsed_path = urlparse(self.path)
@@ -665,6 +824,8 @@ class HistoryHandler(http.server.SimpleHTTPRequestHandler):
             self.handle_get_realtime()
         elif parsed_path.path == "/api/terminal-windows":
             self.handle_get_terminal_windows()
+        elif parsed_path.path == "/api/cronjob-status":
+            self.handle_get_cronjob_status()
         else:
             # Serve static files
             super().do_GET()
@@ -701,6 +862,47 @@ class HistoryHandler(http.server.SimpleHTTPRequestHandler):
                 "path": str(CLAUDE_MD_PATH),
                 "content": content
             }, 200)
+        except Exception as e:
+            self.send_json_response({"error": str(e)}, 500)
+
+    def handle_get_cronjob_status(self):
+        """Check if the periodic refresh cron job is set up."""
+        import subprocess
+        import re
+        try:
+            result = subprocess.run(
+                ["crontab", "-l"],
+                capture_output=True,
+                text=True
+            )
+
+            if result.returncode != 0:
+                self.send_json_response({
+                    "enabled": False,
+                    "interval_minutes": None,
+                    "cron_entry": None
+                }, 200)
+                return
+
+            # Look for claude_history_analyzer entry
+            for line in result.stdout.split("\n"):
+                if "claude_history_analyzer" in line and not line.strip().startswith("#"):
+                    # Extract interval from cron expression (e.g., */30 * * * *)
+                    match = re.match(r"\*/(\d+)\s+", line.strip())
+                    interval = int(match.group(1)) if match else None
+                    self.send_json_response({
+                        "enabled": True,
+                        "interval_minutes": interval,
+                        "cron_entry": line.strip()
+                    }, 200)
+                    return
+
+            self.send_json_response({
+                "enabled": False,
+                "interval_minutes": None,
+                "cron_entry": None
+            }, 200)
+
         except Exception as e:
             self.send_json_response({"error": str(e)}, 500)
 
