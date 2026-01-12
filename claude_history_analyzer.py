@@ -72,7 +72,7 @@ def parse_timestamp(ts) -> Optional[datetime]:
 
 def get_project_slug(project_path: str) -> str:
     """Convert project path to Claude's slug format."""
-    return project_path.replace("/", "-")
+    return project_path.replace("/", "-").replace("_", "-")
 
 
 def get_project_name(project_path: str) -> str:
