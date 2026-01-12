@@ -7,6 +7,8 @@ Serves static files and provides API endpoints for:
 - Real-time session monitoring
 """
 
+from __future__ import annotations
+
 import http.server
 import json
 import os
